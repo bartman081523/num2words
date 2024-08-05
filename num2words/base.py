@@ -306,14 +306,12 @@ class Num2Word_Base(object):
             self.pluralize(right, cr2)
         )
 
-    def to_date(self, value, converter, lang='en', date_format="%Y-%m-%d"):  # Add converter argument
+    def to_date(self, date_obj, lang='en', date_format="%Y-%m-%d"):  # Accept date_obj
         """
-        Converts a number to a date string with concise year representation
-        and uses language-specific ordinals.
+        Converts a datetime object to a date string.
 
         Args:
-            value (int): The number to convert.
-            converter (Num2Word_Base): The language converter instance.
+            date_obj (datetime): The datetime object to convert.
             lang (str, optional): The language for day and month names. Defaults to 'en'.
             date_format (str, optional): The desired date format. Defaults to "%Y-%m-%d".
 
@@ -321,29 +319,17 @@ class Num2Word_Base(object):
             str: The date string in the specified format.
 
         Raises:
-            ValueError: If the input value is not a positive integer.
+            TypeError: If the input value is not a datetime object.
         """
-        if not isinstance(value, int) or value <= 0:
-            raise ValueError("Input value must be a positive integer.")
+        if not isinstance(date_obj, datetime):
+            raise TypeError("Input value must be a datetime object.")
 
-        from datetime import datetime, timedelta
-        from num2words import num2words 
+        from num2words import num2words
 
-        try:
-            start_date = datetime(1970, 1, 1)  # Unix epoch start date
-            date = start_date + timedelta(days=value - 1)  # Subtract 1 to align with day 1
+        # Use the provided converter
+        day = num2words(date_obj.day, lang=lang, to='ordinal')
+        month = num2words(date_obj.month, lang=lang, to='month')
+        year = date_obj.year
+        year_str = num2words(year // 100 * 100, lang=lang) + num2words(year % 100, lang=lang)
 
-            # Use the provided converter 
-            day = converter.to_ordinal(date.day)
-            month = num2words(date.month, lang=lang, to='month')
-            year = date.year
-            year_str = num2words(year // 100 * 100, lang=lang) + num2words(year % 100, lang=lang)
-
-            return date.strftime(date_format).replace("%d", day).replace("%B", month).replace("%Y", year_str)
-        except OverflowError:
-            raise ValueError("Input value is too large to represent as a date.")
-            year_str = num2words(year // 100 * 100, lang=lang) + num2words(year % 100, lang=lang)
-
-            return date.strftime(date_format).replace("%d", day).replace("%B", month).replace("%Y", year_str)
-        except OverflowError:
-            raise ValueError("Input value is too large to represent as a date.")
+        return date_obj.strftime(date_format).replace("%d", day).replace("%B", month).replace("%Y", year_str)
