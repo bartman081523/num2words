@@ -156,13 +156,12 @@ class Num2Word_DE(Num2Word_EU):
         return self.to_splitnum(val, hightxt="hundert", longval=longval)\
             .replace(' ', '')
 
-    def to_date(self, value, converter, lang='de', date_format="%d. %B %Y"):
+    def to_date(self, value, lang='de', date_format="%d. %B %Y"):
         """
         Converts a number to a German date string with correct ordinal endings.
 
         Args:
             value (int): The number to convert.
-            converter (Num2Word_Base): The language converter instance.
             lang (str, optional): The language for day and month names. Defaults to 'de'.
             date_format (str, optional): The desired date format. Defaults to "%d. %B %Y".
 
@@ -183,7 +182,7 @@ class Num2Word_DE(Num2Word_EU):
             date = start_date + timedelta(days=value - 1)  # Subtract 1 to align with day 1
 
             # Get ordinal day with correct German ending 
-            day = converter.to_ordinal(date.day)
+            day = self.to_ordinal(date.day)  # Use self.to_ordinal()
             if not day.endswith("r"):
                 day += "r"
 
