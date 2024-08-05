@@ -104,6 +104,7 @@ def num2words(number, ordinal=False, lang='en', to='cardinal', **kwargs):
         to = 'ordinal'
       
     if to == 'date':
+        from datetime import datetime
         if isinstance(number, datetime):
             return converter.to_date(number, lang=lang, **kwargs)
         else:
