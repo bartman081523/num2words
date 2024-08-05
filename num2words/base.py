@@ -303,8 +303,45 @@ class Num2Word_Base(object):
             self.pluralize(left, cr1),
             separator,
             cents_str,
-            self.pluralize(right, cr2)
-        )
 
-    def setup(self):
-        pass
+    def to_date(self, value, converter, lang='en', date_format="%Y-%m-%d"):  # Add converter argument
+        """
+        Converts a number to a date string with concise year representation
+        and uses language-specific ordinals.
+
+        Args:
+            value (int): The number to convert.
+            converter (Num2Word_Base): The language converter instance.
+            lang (str, optional): The language for day and month names. Defaults to 'en'.
+            date_format (str, optional): The desired date format. Defaults to "%Y-%m-%d".
+
+        Returns:
+            str: The date string in the specified format.
+
+        Raises:
+            ValueError: If the input value is not a positive integer.
+        """
+        if not isinstance(value, int) or value <= 0:
+            raise ValueError("Input value must be a positive integer.")
+
+        from datetime import datetime, timedelta
+        from num2words import num2words 
+
+        try:
+            start_date = datetime(1970, 1, 1)  # Unix epoch start date
+            date = start_date + timedelta(days=value - 1)  # Subtract 1 to align with day 1
+
+            # Use the provided converter 
+            day = converter.to_ordinal(date.day)
+            month = num2words(date.month, lang=lang, to='month')
+            year = date.year
+            year_str = num2words(year // 100 * 100, lang=lang) + num2words(year % 100, lang=lang)
+
+            return date.strftime(date_format).replace("%d", day).replace("%B", month).replace("%Y", year_str)
+        except OverflowError:
+            raise ValueError("Input value is too large to represent as a date.")
+            year_str = num2words(year // 100 * 100, lang=lang) + num2words(year % 100, lang=lang)
+
+            return date.strftime(date_format).replace("%d", day).replace("%B", month).replace("%Y", year_str)
+        except OverflowError:
+            raise ValueError("Input value is too large to represent as a date.")
