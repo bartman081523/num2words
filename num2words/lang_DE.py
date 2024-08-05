@@ -156,12 +156,12 @@ class Num2Word_DE(Num2Word_EU):
         return self.to_splitnum(val, hightxt="hundert", longval=longval)\
             .replace(' ', '')
 
-    def to_date(self, value, lang='de', date_format="%d. %B %Y"):
+    def to_date(self, date_obj, lang='de', date_format="%d. %B %Y"):  # Accept date_obj
         """
-        Converts a number to a German date string with correct ordinal endings.
+        Converts a datetime object to a German date string with correct ordinal endings.
 
         Args:
-            value (int): The number to convert.
+            date_obj (datetime): The datetime object to convert.
             lang (str, optional): The language for day and month names. Defaults to 'de'.
             date_format (str, optional): The desired date format. Defaults to "%d. %B %Y".
 
@@ -169,28 +169,21 @@ class Num2Word_DE(Num2Word_EU):
             str: The date string in the specified format.
 
         Raises:
-            ValueError: If the input value is not a positive integer.
+            TypeError: If the input value is not a datetime object.
         """
-        if not isinstance(value, int) or value <= 0:
-            raise ValueError("Input value must be a positive integer.")
+        if not isinstance(date_obj, datetime):
+            raise TypeError("Input value must be a datetime object.")
 
-        from datetime import datetime, timedelta
         from num2words import num2words
 
-        try:
-            start_date = datetime(1970, 1, 1)  # Unix epoch start date
-            date = start_date + timedelta(days=value - 1)  # Subtract 1 to align with day 1
+        # Get ordinal day with correct German ending
+        day = self.to_ordinal(date_obj.day)
+        if not day.endswith("r"):
+            day += "r"
 
-            # Get ordinal day with correct German ending 
-            day = self.to_ordinal(date.day)  # Use self.to_ordinal()
-            if not day.endswith("r"):
-                day += "r"
+        # Get month and year
+        month = date_obj.strftime("%B")
+        year = date_obj.year
+        year_str = num2words(year // 100 * 100, lang=lang) + num2words(year % 100, lang=lang)
 
-            # Get month and year
-            month = date.strftime("%B") # German month name from strftime
-            year = date.year
-            year_str = num2words(year // 100 * 100, lang=lang) + num2words(year % 100, lang=lang)
-
-            return date.strftime(date_format).replace("%d", day).replace("%B", month).replace("%Y", year_str)
-        except OverflowError:
-            raise ValueError("Input value is too large to represent as a date.")
+        return date_obj.strftime(date_format).replace("%d", day).replace("%B", month).replace("%Y", year_str)
