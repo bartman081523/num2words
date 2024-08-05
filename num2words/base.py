@@ -303,6 +303,8 @@ class Num2Word_Base(object):
             self.pluralize(left, cr1),
             separator,
             cents_str,
+            self.pluralize(right, cr2)
+        )
 
     def to_date(self, value, converter, lang='en', date_format="%Y-%m-%d"):  # Add converter argument
         """
