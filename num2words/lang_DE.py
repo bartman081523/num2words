@@ -23,6 +23,9 @@ from .lang_EU import Num2Word_EU
 
 
 class Num2Word_DE(Num2Word_EU):
+    def __init__(self):
+        super().__init__()
+        self.MAXVAL = 10**51
     CURRENCY_FORMS = {
         'EUR': (('Euro', 'Euro'), ('Cent', 'Cent')),
         'GBP': (('Pfund', 'Pfund'), ('Penny', 'Pence')),
