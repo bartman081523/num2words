@@ -155,3 +155,43 @@ class Num2Word_DE(Num2Word_EU):
             return self.to_cardinal(val)
         return self.to_splitnum(val, hightxt="hundert", longval=longval)\
             .replace(' ', '')
+
+    def to_date(self, value, converter, lang='de', date_format="%d. %B %Y"):
+        """
+        Converts a number to a German date string with correct ordinal endings.
+
+        Args:
+            value (int): The number to convert.
+            converter (Num2Word_Base): The language converter instance.
+            lang (str, optional): The language for day and month names. Defaults to 'de'.
+            date_format (str, optional): The desired date format. Defaults to "%d. %B %Y".
+
+        Returns:
+            str: The date string in the specified format.
+
+        Raises:
+            ValueError: If the input value is not a positive integer.
+        """
+        if not isinstance(value, int) or value <= 0:
+            raise ValueError("Input value must be a positive integer.")
+
+        from datetime import datetime, timedelta
+        from num2words import num2words
+
+        try:
+            start_date = datetime(1970, 1, 1)  # Unix epoch start date
+            date = start_date + timedelta(days=value - 1)  # Subtract 1 to align with day 1
+
+            # Get ordinal day with correct German ending 
+            day = converter.to_ordinal(date.day)
+            if not day.endswith("r"):
+                day += "r"
+
+            # Get month and year
+            month = date.strftime("%B") # German month name from strftime
+            year = date.year
+            year_str = num2words(year // 100 * 100, lang=lang) + num2words(year % 100, lang=lang)
+
+            return date.strftime(date_format).replace("%d", day).replace("%B", month).replace("%Y", year_str)
+        except OverflowError:
+            raise ValueError("Input value is too large to represent as a date.")
