@@ -102,6 +102,12 @@ def num2words(number, ordinal=False, lang='en', to='cardinal', **kwargs):
     # backwards compatible
     if ordinal:
         to = 'ordinal'
+      
+    if to == 'date':
+        if isinstance(number, datetime):
+            return converter.to_date(number, lang=lang, **kwargs)
+        else:
+            raise TypeError("For to='date', input must be a datetime object.")
 
     if to not in CONVERTES_TYPES:
         raise NotImplementedError()
