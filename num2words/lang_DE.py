@@ -171,6 +171,7 @@ class Num2Word_DE(Num2Word_EU):
         Raises:
             TypeError: If the input value is not a datetime object.
         """
+        from datetime import datetime
         if not isinstance(date_obj, datetime):
             raise TypeError("Input value must be a datetime object.")
 
