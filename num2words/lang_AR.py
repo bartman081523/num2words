@@ -115,10 +115,6 @@ class Num2Word_AR(Num2Word_Base):
         assert len(self.arabicAppendedGroup) == len(self.arabicGroup)
         assert len(self.arabicPluralGroups) == len(self.arabicGroup)
         assert len(self.arabicAppendedTwos) == len(self.arabicTwos)
-
-    def setup(self):
-        # Add any necessary setup logic here (or leave it empty)
-        pass
   
     def number_to_arabic(self, arabic_prefix_text, arabic_suffix_text):
         self.arabicPrefixText = arabic_prefix_text
